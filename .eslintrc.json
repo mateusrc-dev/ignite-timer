@@ -1,0 +1,5 @@
+//esse arquivo tem extensão json porque coloca auto complete no arquivo
+
+{
+  "extends": "@rocketseat/eslint-config/react" //usando as configurações da rocket para react - com isso o eslint está configurado
+}
