@@ -23,7 +23,7 @@ export const ButtonContainer = styled.button<ButtonContainerProps>`
   border: 0;
   margin: 8px;
 
-  background-color: ${props => props.theme.primary}; //o styled component vai colocar dentro de props o 'theme' - conseguimos acessar o tema dentro de props - podemos pegar as cores do nosso tema
+  background-color: ${props => props.theme["green-500"]}; //o styled component vai colocar dentro de props o 'theme' - conseguimos acessar o tema dentro de props - podemos pegar as cores do nosso tema
   color: ${props => props.theme.white};
 
   /*${(props) =>
