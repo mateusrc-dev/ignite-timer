@@ -46,6 +46,10 @@ const BaseInput = styled.input`
 export const TaskInput = styled(BaseInput)`
   // vamos colocar o BaseInput como um parâmetro aqui
   flex: 1; // se colocar width 100% a linha vai quebrar (é como se colocasse display block) - podemos usar flex-1 porque no Container tem dipsplay flex - flex 1 é pro elemento ocupar o máximo de espaço onde ele estiver
+  &::-webkit-calendar-picker-indicator {
+    // o & comercial é para referenciar esse mesmo input
+    display: none !important; //esse comando é para tirar a setinha do datalist que fica no input
+  }
 `
 export const MinutesAmountInput = styled(BaseInput)`
   width: 4rem;
