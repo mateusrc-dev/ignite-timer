@@ -66,10 +66,10 @@ const STATUS_COLORS = {
   yellow: 'yellow-500',
   green: 'green-500',
   red: 'red-500',
-} as const // forma de dizer que o valor das variáveis acima não vão variar - string pode ser qualquer texto
+} as const // forma de dizer que o valor das variáveis acima não vão variar - se não colocarmos vai ficar string, e string pode ser qualquer texto
 
 interface StatusProps {
-  statusColor: keyof typeof STATUS_COLORS // as cores que temos disponíveis são as keys do meu tipo do meu STATUS_COLORS - TS só consegue ler a tipagem de um objeto JS (por isso passamos o typeof)
+  statusColor: keyof typeof STATUS_COLORS // as cores que temos disponíveis são as keys do meu tipo do meu STATUS_COLORS - TS só consegue ler a tipagem de um objeto JS (por isso passamos o typeof), não consegue ler objeto JS
 }
 
 // pra fazer esse componente de Status receber propriedades vamos ter que criar uma interface
