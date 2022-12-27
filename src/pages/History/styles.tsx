@@ -60,3 +60,34 @@ export const HistoryList = styled.div`
     }
   }
 `
+
+const STATUS_COLORS = {
+  // vamos criar um objeto com as cores
+  yellow: 'yellow-500',
+  green: 'green-500',
+  red: 'red-500',
+} as const // forma de dizer que o valor das variáveis acima não vão variar - string pode ser qualquer texto
+
+interface StatusProps {
+  statusColor: keyof typeof STATUS_COLORS // as cores que temos disponíveis são as keys do meu tipo do meu STATUS_COLORS - TS só consegue ler a tipagem de um objeto JS (por isso passamos o typeof)
+}
+
+// pra fazer esse componente de Status receber propriedades vamos ter que criar uma interface
+export const Status = styled.span<StatusProps>`
+  // colocamos a tipagem desse componente entre o sinal de maior e menor - generics
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::before {
+    //vamos criar um elemento novo dentro de Status dentro do css - before é pra criar no começo do Status - after é no final
+    content: ''; //temos que colocar o conteúdo, mesmo que seja em branco
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: ${(props) =>
+      props.theme[
+        STATUS_COLORS[props.statusColor]
+      ]}; //vamos pegar a nossa propriedade statusColor que está dentro de props
+  }
+`
