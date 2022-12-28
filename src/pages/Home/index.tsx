@@ -33,6 +33,7 @@ interface Cycle {
   minutesAmount: number
   startDate: Date // esse Date é do JS - é tanto data como horário - para ter como base para saber quanto tempo passou
   interruptedDate?: Date // essa data é opcional porque só vai existir se a pessoa interromper o ciclo
+  finishedDate?: Date // essa data é opcional porque só vai existir se o ciclo finalizar
 }
 
 export function Home() {
@@ -49,6 +50,7 @@ export function Home() {
   }) // useForm retorna um objeto com várias funções dentro dele - por isso podemos desestruturar - quando usamos o useForm() é como se estivessemos criando um novo formulário na aplicação e a função register fala quais campos vou ter no formulário - register recebe o nome do input (é uma função que recebe parâmetros) e retorna alguns métodos que usamos pra trabalhar com input (onChange, onBlur, onFocus...) - vamos importar a função watch para observar determinado input - no objeto de configurações vamos colocar o esquema de validação (regras de validação - vamos criar um objeto para colocar essas regras) - também no objeto de configurações podemos passar a propriedade defaultValues e dizer os valores iniciais dos campos do formulário - vamos passar um generic para o useForm com a tipagem de data
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // vamos retornar o ciclo que tenha o 'id' igual ao 'id' do ciclo ativo
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0 // vamos transformar os minutos do ciclo inserido pelo usuário em segundos
 
   useEffect(() => {
     let interval: number // number porque o JS coloca uma referência nele (um number) pra podermos depois removermos eles
@@ -56,9 +58,27 @@ export function Home() {
       // se vamos fazer a redução do countdown se houver um ciclo, LÓGICO!
       interval = setInterval(() => {
         // função para fazer os segundos reduzirem, a cada 1000 milissegundos será executada novamente (porque foi o intervalo especificado) - vamos guardar ela em uma variável que será usada na função clearInterval
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), activeCycle.startDate), // função que calcula a diferença de duas datas em segundos - primeiro parâmetro tem que ser a data mais atual e o segundo a que passou
-        )
+        const secondsDifference = differenceInSeconds(
+          new Date(),
+          activeCycle.startDate,
+        ) // função que calcula a diferença de duas datas em segundos - primeiro parâmetro tem que ser a data mais atual e o segundo a que passou
+        if (secondsDifference >= totalSeconds) {
+          // se a diferença em segundos entre a data que o ciclo foi criado (activeCycle.startDate) pra data atual (new Date()) for igual ou maior que o total de segundos (totalSeconds) do ciclo quer dizer que o ciclo acabou
+          setCycles((state) =>
+            state.map((cycle) => {
+              // map vai percorrer cada ciclo dentro de 'cycles' e vai retornar cada ciclo alterado ou não - estamos seguindo os princípios da imutabilidade
+              if (cycle.id === activeCycleId) {
+                // se o id do cycle corrente for igual ao id do ciclo ativo então...
+                return { ...cycle, finishedDate: new Date() } // vamos retornar os dados que já estão do ciclo mais a nova informação com a data atual
+              } else {
+                return cycle // ciclo não alterado
+              }
+            }),
+          )
+          setActiveCycleId(null) // vamos atualizar o ciclo ativo para nulo
+        } else {
+          setAmountSecondsPassed(secondsDifference)
+        }
       }, 1000)
     }
 
@@ -66,7 +86,7 @@ export function Home() {
       // esse return vai ser chamado quando um novo useEffect for ativado
       clearInterval(interval) // função para parar o setInterval
     } // podemos ter um retorno do useEffect - vamos criar uma função para deletar os intervalos anteriores que não precisamos mais (porque quando o activeCycle muda, é ativado de novo o useEffect com um novo interval)
-  }, [activeCycle]) // sempre que usamos uma variável externa no useEffect, temos que colocar ela como uma dependência
+  }, [activeCycle, totalSeconds, activeCycleId]) // sempre que usamos uma variável externa no useEffect, temos que colocar ela como uma dependência
 
   function handleCreateNewCycle(data: NewCycleFormData) {
     // vamos usar um método com um nome diferente de handleSubmit que estamos pegando acima em useForm - vamos colocar esse método dentro de handleSubmit abaixo - podemos receber como argumento o data (são os dados do nosso input do nosso formulário)
@@ -86,8 +106,8 @@ export function Home() {
 
   function handleInterruptCycle() {
     // função para parar o ciclo
-    setCycles(
-      cycles.map((cycle) => {
+    setCycles((state) =>
+      state.map((cycle) => {
         // map vai percorrer cada ciclo dentro de 'cycles' e vai retornar cada ciclo alterado ou não - estamos seguindo os princípios da imutabilidade
         if (cycle.id === activeCycleId) {
           // se o id do cycle corrente for igual ao id do ciclo ativo então...
@@ -100,7 +120,6 @@ export function Home() {
     setActiveCycleId(null) // vamos atualizar o ciclo ativo para nulo
   }
 
-  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0 // vamos transformar os minutos do ciclo inserido pelo usuário em segundos
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0 // vamos subtrair o total de segundos do ciclo menos o segundos que passaram
   const minutesAmount = Math.floor(currentSeconds / 60) // vamos calcular quantos minutos temos dentro dos segundos correntes - como a divisão pode ficar um número quebrado, temos que arredondar esse número para baixo
   const secondsAmount = currentSeconds % 60 // calculando o número de segundos corrente
