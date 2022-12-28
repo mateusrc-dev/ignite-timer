@@ -1,4 +1,4 @@
-import { Play } from 'phosphor-react'
+import { HandPalm, Play } from 'phosphor-react'
 import { useForm } from 'react-hook-form' // vamos importar da biblioteca que lida com formulários
 import { zodResolver } from '@hookform/resolvers/zod' // biblioteca que instalamos pra fazer a integração - temos uma integração específica para o zod
 import * as zod from 'zod' // vamos importar tudo de zod e dar um nome pra isso 'vai ser zod' - isso porque essa biblioteca não tem um export default
@@ -11,6 +11,7 @@ import {
   MinutesAmountInput,
   Separator,
   StartCountdownButton,
+  StopCountdownButton,
   TaskInput,
 } from './styles'
 
@@ -31,6 +32,7 @@ interface Cycle {
   task: String
   minutesAmount: number
   startDate: Date // esse Date é do JS - é tanto data como horário - para ter como base para saber quanto tempo passou
+  interruptedDate?: Date // essa data é opcional porque só vai existir se a pessoa interromper o ciclo
 }
 
 export function Home() {
@@ -49,15 +51,21 @@ export function Home() {
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // vamos retornar o ciclo que tenha o 'id' igual ao 'id' do ciclo ativo
 
   useEffect(() => {
+    let interval: number // number porque o JS coloca uma referência nele (um number) pra podermos depois removermos eles
     if (activeCycle) {
       // se vamos fazer a redução do countdown se houver um ciclo, LÓGICO!
-      setInterval(() => {
-        // função para fazer os segundos reduzirem, a cada 1000 milissegundos será executada novamente
+      interval = setInterval(() => {
+        // função para fazer os segundos reduzirem, a cada 1000 milissegundos será executada novamente (porque foi o intervalo especificado) - vamos guardar ela em uma variável que será usada na função clearInterval
         setAmountSecondsPassed(
           differenceInSeconds(new Date(), activeCycle.startDate), // função que calcula a diferença de duas datas em segundos - primeiro parâmetro tem que ser a data mais atual e o segundo a que passou
         )
       }, 1000)
     }
+
+    return () => {
+      // esse return vai ser chamado quando um novo useEffect for ativado
+      clearInterval(interval) // função para parar o setInterval
+    } // podemos ter um retorno do useEffect - vamos criar uma função para deletar os intervalos anteriores que não precisamos mais (porque quando o activeCycle muda, é ativado de novo o useEffect com um novo interval)
   }, [activeCycle]) // sempre que usamos uma variável externa no useEffect, temos que colocar ela como uma dependência
 
   function handleCreateNewCycle(data: NewCycleFormData) {
@@ -66,13 +74,30 @@ export function Home() {
       id: String(new Date().getTime()), // o getTime retorna o tempo em milissegundos
       task: data.task,
       minutesAmount: data.minutesAmount,
-      startDate: new Date(),
+      startDate: new Date(), // vamos colocar a data e horário que foi criada o ciclo
     }
 
     setCycles((state) => [...state, newCycle]) // adicionando o novo ciclo na listagem de ciclos
-    setActiveCycleId(newCycle.id) // vamos armazenar o 'id' do ciclo ativo aqui
+    setActiveCycleId(newCycle.id) // vamos armazenar o 'id' do ciclo ativo nesse estado
+    setAmountSecondsPassed(0) // vamos zerar os a contagem dos segundos pra quando reiniciar o ciclo eles iniciarem corretamente
 
     reset() // podemos recuperar essa função de useForm - ela automaticamente retorna os campos para o valor inicial (que foi inserido nas configurações)
+  }
+
+  function handleInterruptCycle() {
+    // função para parar o ciclo
+    setCycles(
+      cycles.map((cycle) => {
+        // map vai percorrer cada ciclo dentro de 'cycles' e vai retornar cada ciclo alterado ou não - estamos seguindo os princípios da imutabilidade
+        if (cycle.id === activeCycleId) {
+          // se o id do cycle corrente for igual ao id do ciclo ativo então...
+          return { ...cycle, interruptedDate: new Date() } // vamos retornar os dados que já estão do ciclo mais a nova informação com a data atual
+        } else {
+          return cycle // ciclo não alterado
+        }
+      }),
+    )
+    setActiveCycleId(null) // vamos atualizar o ciclo ativo para nulo
   }
 
   const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0 // vamos transformar os minutos do ciclo inserido pelo usuário em segundos
@@ -81,6 +106,14 @@ export function Home() {
   const secondsAmount = currentSeconds % 60 // calculando o número de segundos corrente
   const minutes = String(minutesAmount).padStart(2, '0') // vamos preencher a string de minutos pra ficar com o zero na frente
   const seconds = String(secondsAmount).padStart(2, '0')
+
+  useEffect(() => {
+    if (activeCycle) {
+      document.title = `${minutes}:${seconds} | Ignite Timer`
+    } else if (!activeCycle) {
+      document.title = 'Ignite Timer'
+    }
+  }, [activeCycle, minutes, seconds]) // toda vez que nossos minutos e segundos mudarem, será mudado o título da janela
 
   const task = watch('task') // vamos observar o input de nome 'task' (nome que colocamos dentro de register) em tempo real, com isso podemos fazer a validação em 'disabled' - transforma o nosso formulário em um controlled
   const isSubmitDisabled = !task
@@ -97,6 +130,7 @@ export function Home() {
             placeholder="Dê um nome para o seu projeto"
             list="task-suggestions" // vamos colocar o id do data lista para conectar esse input com o datalist
             {...register('task')} // estamos dando o nome para o nosso input passando ele como parâmetro da função register - não precisamos mais colocar o name - o '...' está pegando o que a função register retorna (os métodos) e acoplando no nosso input como propriedades
+            disabled={!!activeCycle} // vamos desabilitar o input caso tiver um ciclo ativo - as duas exclamações é pra transformar em boolean - caso houver um ciclo vai ser true, caso contrário, false
           />
           <datalist id="task-suggestions">
             <option value="Projeto 1" />
@@ -114,6 +148,7 @@ export function Home() {
             min={5} // podemos estabelecer o valor mínimo e o valor máximo
             max={60}
             {...register('minutesAmount', { valueAsNumber: true })} // depois do nome do input vamos passar como parâmetro um objeto de configurações - vamos configurar para que o valor do número retorne do tipo number
+            disabled={!!activeCycle}
           />
           <span>minutos.</span>
         </FormContainer>
@@ -130,10 +165,17 @@ export function Home() {
           <span>{seconds[1]}</span>
         </CountDownContainer>
 
-        <StartCountdownButton disabled={isSubmitDisabled} type="submit">
-          <Play size={24} />
-          Começar
-        </StartCountdownButton>
+        {activeCycle ? ( // o button de stop vai ser do tipo button porque não estamos querendo submeter um formulário com ele
+          <StopCountdownButton onClick={handleInterruptCycle} type="button">
+            <HandPalm size={24} />
+            Interromper
+          </StopCountdownButton>
+        ) : (
+          <StartCountdownButton disabled={isSubmitDisabled} type="submit">
+            <Play size={24} />
+            Começar
+          </StartCountdownButton>
+        )}
       </form>
     </HomeContainer>
   )

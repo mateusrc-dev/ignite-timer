@@ -72,11 +72,12 @@ export const Separator = styled.div`
   padding: 2rem 0;
   color: ${(props) => props.theme['green-500']};
   width: 4rem;
-  overflow: hidden;
+  overflow: hiden;
   display: flex;
   justify-content: center;
 `
-export const StartCountdownButton = styled.button`
+export const BaseCountdownButton = styled.button`
+  //vamos usar esse component como base para os outros buttons
   //vamos criar um componente estilizado para o button - é bom evitar colocar muitas cascatas de seleção
   width: 100%;
   border: 0;
@@ -88,14 +89,23 @@ export const StartCountdownButton = styled.button`
   gap: 0.5rem;
   font-weight: bold;
   cursor: pointer;
-  background: ${(props) => props.theme['green-500']};
   color: ${(props) => props.theme['gray-100']};
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
   }
+`
+export const StartCountdownButton = styled(BaseCountdownButton)`
+  background: ${(props) => props.theme['green-500']};
   &:not(:disabled):hover {
     // vamos aplicar esse hover somente se o botão não estiver desabilitado
     background: ${(props) => props.theme['green-700']};
+  }
+`
+export const StopCountdownButton = styled(BaseCountdownButton)`
+  background: ${(props) => props.theme['red-500']};
+  &:not(:disabled):hover {
+    // vamos aplicar esse hover somente se o botão não estiver desabilitado
+    background: ${(props) => props.theme['red-700']};
   }
 `
