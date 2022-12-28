@@ -2,6 +2,8 @@ import { Play } from 'phosphor-react'
 import { useForm } from 'react-hook-form' // vamos importar da biblioteca que lida com formulários
 import { zodResolver } from '@hookform/resolvers/zod' // biblioteca que instalamos pra fazer a integração - temos uma integração específica para o zod
 import * as zod from 'zod' // vamos importar tudo de zod e dar um nome pra isso 'vai ser zod' - isso porque essa biblioteca não tem um export default
+import { useEffect, useState } from 'react'
+import { differenceInSeconds } from 'date-fns' // vamos importar uma função que calcula a diferença de duas datas em segundos
 import {
   CountDownContainer,
   FormContainer,
@@ -11,7 +13,6 @@ import {
   StartCountdownButton,
   TaskInput,
 } from './styles'
-import { useState } from 'react'
 
 const newCycleFormValidationSchema = zod.object({
   // vamos criar um esquema para validar os dados do nosso formulário - vamos usar object porque vamos validar um objeto (os dados do formulário vem em um objeto)
@@ -29,11 +30,13 @@ interface Cycle {
   id: string // vamos ter vários ciclos registrados (lista de ciclos), por isso vai ser importante termos um id
   task: String
   minutesAmount: number
+  startDate: Date // esse Date é do JS - é tanto data como horário - para ter como base para saber quanto tempo passou
 }
 
 export function Home() {
   const [cycles, setCycles] = useState<Cycle[]>([]) // vamos dizer para o estado que ele vai armazenar uma lista de ciclos com o generics (um array de ciclos)
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null) // estado que vai armazenar o 'id' do ciclo ativo - generics para fazer a tipagem do dado do estado em generics - vai inicializar como nulo porque o valor inicial do ciclo é nulo
+  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0) // esse estado vai armazenar a quantidade de segundos que passaram após o ciclo ter sido criado
 
   const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
     resolver: zodResolver(newCycleFormValidationSchema),
@@ -43,12 +46,27 @@ export function Home() {
     },
   }) // useForm retorna um objeto com várias funções dentro dele - por isso podemos desestruturar - quando usamos o useForm() é como se estivessemos criando um novo formulário na aplicação e a função register fala quais campos vou ter no formulário - register recebe o nome do input (é uma função que recebe parâmetros) e retorna alguns métodos que usamos pra trabalhar com input (onChange, onBlur, onFocus...) - vamos importar a função watch para observar determinado input - no objeto de configurações vamos colocar o esquema de validação (regras de validação - vamos criar um objeto para colocar essas regras) - também no objeto de configurações podemos passar a propriedade defaultValues e dizer os valores iniciais dos campos do formulário - vamos passar um generic para o useForm com a tipagem de data
 
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // vamos retornar o ciclo que tenha o 'id' igual ao 'id' do ciclo ativo
+
+  useEffect(() => {
+    if (activeCycle) {
+      // se vamos fazer a redução do countdown se houver um ciclo, LÓGICO!
+      setInterval(() => {
+        // função para fazer os segundos reduzirem, a cada 1000 milissegundos será executada novamente
+        setAmountSecondsPassed(
+          differenceInSeconds(new Date(), activeCycle.startDate), // função que calcula a diferença de duas datas em segundos - primeiro parâmetro tem que ser a data mais atual e o segundo a que passou
+        )
+      }, 1000)
+    }
+  }, [activeCycle]) // sempre que usamos uma variável externa no useEffect, temos que colocar ela como uma dependência
+
   function handleCreateNewCycle(data: NewCycleFormData) {
     // vamos usar um método com um nome diferente de handleSubmit que estamos pegando acima em useForm - vamos colocar esse método dentro de handleSubmit abaixo - podemos receber como argumento o data (são os dados do nosso input do nosso formulário)
     const newCycle: Cycle = {
       id: String(new Date().getTime()), // o getTime retorna o tempo em milissegundos
       task: data.task,
       minutesAmount: data.minutesAmount,
+      startDate: new Date(),
     }
 
     setCycles((state) => [...state, newCycle]) // adicionando o novo ciclo na listagem de ciclos
@@ -57,9 +75,12 @@ export function Home() {
     reset() // podemos recuperar essa função de useForm - ela automaticamente retorna os campos para o valor inicial (que foi inserido nas configurações)
   }
 
-  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // vamos retornar o ciclo que tenha o 'id' igual ao 'id' do ciclo ativo
-
-  console.log(activeCycle)
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0 // vamos transformar os minutos do ciclo inserido pelo usuário em segundos
+  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0 // vamos subtrair o total de segundos do ciclo menos o segundos que passaram
+  const minutesAmount = Math.floor(currentSeconds / 60) // vamos calcular quantos minutos temos dentro dos segundos correntes - como a divisão pode ficar um número quebrado, temos que arredondar esse número para baixo
+  const secondsAmount = currentSeconds % 60 // calculando o número de segundos corrente
+  const minutes = String(minutesAmount).padStart(2, '0') // vamos preencher a string de minutos pra ficar com o zero na frente
+  const seconds = String(secondsAmount).padStart(2, '0')
 
   const task = watch('task') // vamos observar o input de nome 'task' (nome que colocamos dentro de register) em tempo real, com isso podemos fazer a validação em 'disabled' - transforma o nosso formulário em um controlled
   const isSubmitDisabled = !task
@@ -98,11 +119,15 @@ export function Home() {
         </FormContainer>
 
         <CountDownContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>
+            {
+              minutes[0] /* vamos pegar o primeiro caractere de minutes (que é uma string) */
+            }
+          </span>
+          <span>{minutes[1]}</span>
           <Separator>:</Separator>
-          <span>0</span>
-          <span>0</span>
+          <span>{seconds[0]}</span>
+          <span>{seconds[1]}</span>
         </CountDownContainer>
 
         <StartCountdownButton disabled={isSubmitDisabled} type="submit">
