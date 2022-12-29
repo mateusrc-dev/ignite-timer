@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom' // é importante que esse compo
 import { Router } from './Router'
 import { GlobalStyle } from './styles/global' // é importante que o GlobalStyle esteja dentro do ThemeProvider, se não ele não vai ter acesso as variáveis do nosso tema - colocando o GlobalStyle abaixo ele é aplicado no projeto
 import { defaultTheme } from './styles/themes/default' // importando o nosso tema
-import { CyclesContextProvider } from './contexts/CyclesContext'
+import { CyclesContextProvider } from './contexts/CyclesContext' // importando o nosso contexto com informações que são necessárias em Home e History
 
 export function App() {
   return (
