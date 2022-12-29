@@ -18,7 +18,7 @@ interface Cycle {
 }
 
 interface CyclesContextType {
-  // vamos falar aqui quais informações vamos colocar dentro do contexto - as informações que Countdown precisa
+  // vamos falar aqui quais informações vamos colocar dentro do contexto - as informações que Countdown, Home, History precisam
   cycles: Cycle[] // vamos passar cycles para o contexto para termos acesso em history
   activeCycle: Cycle | undefined // vai ser undefined quando o usuário não tiver iniciado nenhum ciclo
   activeCycleId: string | null
@@ -29,7 +29,7 @@ interface CyclesContextType {
   interruptCurrentCycle: () => void
 }
 
-export const CyclesContext = createContext({} as CyclesContextType) // vamos criar o contexto dos ciclos - temos que colocar o 'as' para que em value em Provider sugira os valores a serem inseridos no contexto - para o Countdown conseguir acessar esse contexto, precisamos exportar ele
+export const CyclesContext = createContext({} as CyclesContextType) // vamos criar o contexto dos ciclos - temos que colocar o 'as' para que em value em Provider sugira os valores a serem inseridos no contexto - para o Countdown Home e History conseguir acessar esse contexto, precisamos exportar ele
 
 interface CyclesContextProviderProps {
   children: ReactNode // ReactNode nada mais é do que qualquer HTML válido, qualquer JSX válido
@@ -43,13 +43,14 @@ export function CyclesContextProvider({
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null) // estado que vai armazenar o 'id' do ciclo ativo - generics para fazer a tipagem do dado do estado em generics - vai inicializar como nulo porque o valor inicial do ciclo é nulo
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0) // esse estado vai armazenar a quantidade de segundos que passaram após o ciclo ter sido criado
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // vamos retornar o ciclo que tenha o 'id' igual ao 'id' do ciclo ativo
+
   function setSecondsPassed(seconds: number) {
     // vamos criar uma função para atualizar os segundos que passam que vai ser chamada do componente Countdown
     setAmountSecondsPassed(seconds)
   }
 
   function markCurrentCycleAsFinished() {
-    // é melhor criar uma nova função pra enviar no contexto do que enviar uma função de useState pra atualizar o estado no contexto (essa função foi definida aqui porque usa a função setCycles que só exite dentro de Home)
+    // é melhor criar uma nova função pra enviar no contexto do que enviar uma função de useState pra atualizar o estado no contexto (essa função foi definida aqui porque usa a função setCycles) - vai ser chamada do componente Countdown
     setCycles((state) =>
       state.map((cycle) => {
         // map vai percorrer cada ciclo dentro de 'cycles' e vai retornar cada ciclo alterado ou não - estamos seguindo os princípios da imutabilidade
@@ -64,7 +65,7 @@ export function CyclesContextProvider({
   }
 
   function createNewCycle(data: CreateCycleData) {
-    // vamos usar um método com um nome diferente de handleSubmit que estamos pegando acima em useForm - vamos colocar esse método dentro de handleSubmit abaixo - podemos receber como argumento o data (são os dados do nosso input do nosso formulário)
+    // vamos usar um método com um nome diferente de handleSubmit que estamos pegando acima em useForm - vamos colocar esse método dentro de handleSubmit abaixo - podemos receber como argumento o data (são os dados do nosso input do nosso formulário) - vai ser chamada do componente Home
     const newCycle: Cycle = {
       id: String(new Date().getTime()), // o getTime retorna o tempo em milissegundos
       task: data.task,
@@ -76,11 +77,11 @@ export function CyclesContextProvider({
     setActiveCycleId(newCycle.id) // vamos armazenar o 'id' do ciclo ativo nesse estado
     setAmountSecondsPassed(0) // vamos zerar os a contagem dos segundos pra quando reiniciar o ciclo eles iniciarem corretamente
 
-    // reset() // podemos recuperar essa função de useForm - ela automaticamente retorna os campos para o valor inicial (que foi inserido nas configurações)
+    // reset() - a função reset agora vai ficar no próprio componente Home, vai ser chamada após essa função
   }
 
   function interruptCurrentCycle() {
-    // função para parar o ciclo
+    // função para parar o ciclo  - vai ser chamada do componente Home
     setCycles((state) =>
       state.map((cycle) => {
         // map vai percorrer cada ciclo dentro de 'cycles' e vai retornar cada ciclo alterado ou não - estamos seguindo os princípios da imutabilidade

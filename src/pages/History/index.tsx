@@ -1,6 +1,8 @@
 import { useContext } from 'react'
 import { CyclesContext } from '../../contexts/CyclesContext'
 import { HistoryContainer, HistoryList, Status } from './styles'
+import { formatDistanceToNow } from 'date-fns' // vamos usar esse método para calcular a distância de uma determinada data para a data atual
+import ptBR from 'date-fns/locale/pt-BR'
 
 export function History() {
   const { cycles } = useContext(CyclesContext) // conseguimos ter acesso a cycles através do context
@@ -9,7 +11,6 @@ export function History() {
     <HistoryContainer>
       <h1>Meu histórico</h1>
       <HistoryList>
-        <pre>{JSON.stringify(cycles, null, 2)}</pre>
         <table>
           <thead>
             <tr>
@@ -20,54 +21,37 @@ export function History() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Assistir Naruto</td>
-              <td>20 minutos</td>
-              <td>Há cerca 2 meses</td>
-              <td>
-                <Status statusColor="green">Concluído</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Assistir Naruto</td>
-              <td>20 minutos</td>
-              <td>Há cerca 2 meses</td>
-              <td>
-                <Status statusColor="red">Interrompido</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Assistir Naruto</td>
-              <td>20 minutos</td>
-              <td>Há cerca 2 meses</td>
-              <td>
-                <Status statusColor="green">Concluído</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Assistir Naruto</td>
-              <td>20 minutos</td>
-              <td>Há cerca 2 meses</td>
-              <td>
-                <Status statusColor="yellow">Em andamento</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Assistir Naruto</td>
-              <td>20 minutos</td>
-              <td>Há cerca 2 meses</td>
-              <td>
-                <Status statusColor="green">Concluído</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Assistir Naruto</td>
-              <td>20 minutos</td>
-              <td>Há cerca 2 meses</td>
-              <td>
-                <Status statusColor="red">Interrompido</Status>
-              </td>
-            </tr>
+            {cycles.map((cycle) => {
+              return (
+                <tr key={cycle.id}>
+                  <td>{cycle.task}</td>
+                  <td>{cycle.minutesAmount} minutos</td>
+                  <td>
+                    {formatDistanceToNow(cycle.startDate, {
+                      addSuffix: true, // para ficar um 'há' na frente
+                      locale: ptBR, // para ficar no idioma português
+                    })}
+                  </td>
+                  <td>
+                    {
+                      cycle.finishedDate && (
+                        <Status statusColor="green">Concluído</Status>
+                      ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
+                    }
+                    {
+                      cycle.interruptedDate && (
+                        <Status statusColor="red">Interrompido</Status>
+                      ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
+                    }
+                    {
+                      !cycle.interruptedDate && !cycle.finishedDate && (
+                        <Status statusColor="yellow">Em andamento</Status>
+                      ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
+                    }
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </HistoryList>
