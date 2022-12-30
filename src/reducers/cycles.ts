@@ -14,9 +14,15 @@ interface CyclesState {
   activeCycleId: string | null // estado que vai armazenar o 'id' do ciclo ativo - generics para fazer a tipagem do dado do estado em generics - vai inicializar como nulo porque o valor inicial do ciclo é nulo
 }
 
+export enum ActionTypes { // aqui dentro vamos definir todas as actions que nós temos - enum é um dicionário que diz pra gente exatamente quais ações que nós temos
+  ADD_NEW_CYCLE = 'ADD_NEW_CYCLE',
+  INTERRUPT_CURRENT_CYCLE = 'INTERRUPT_CURRENT_CYCLE',
+  MARK_CURRENT_CYCLE_AS_FINISHED = 'MARK_CURRENT_CYCLE_AS_FINISHED',
+}
+
 export function cyclesReducer(state: CyclesState, action: any) {
   switch (action.type) {
-    case 'ADD_NEW_CYCLE':
+    case ActionTypes.ADD_NEW_CYCLE:
       // função para criar um novo cycle - action vai ter os dados do que foi colocado como argumento da função dispatch()
       return {
         // vamos retornar um objeto porque a tipagem de state é um objeto
@@ -24,7 +30,7 @@ export function cyclesReducer(state: CyclesState, action: any) {
         cycles: [...state.cycles, action.payload.newCycle], // vai ser retornado um novo valor sempre que uma action for disparada - adicionando o novo ciclo na listagem de ciclos
         activeCycleId: action.payload.newCycle.id, // vamos armazenar o 'id' do ciclo ativo nesse estado
       }
-    case 'INTERRUPT_CURRENT_CYCLE':
+    case ActionTypes.INTERRUPT_CURRENT_CYCLE:
       return {
         ...state,
         cycles: state.cycles.map((cycle) => {
@@ -38,7 +44,7 @@ export function cyclesReducer(state: CyclesState, action: any) {
         }),
         activeCycleId: null, // vamos atualizar o ciclo ativo para nulo
       }
-    case 'MARK_CURRENT_CYCLE_AS_FINISHED':
+    case ActionTypes.MARK_CURRENT_CYCLE_AS_FINISHED:
       return {
         ...state,
         cycles: state.cycles.map((cycle) => {

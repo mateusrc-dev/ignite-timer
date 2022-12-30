@@ -1,6 +1,6 @@
 // vamos colocar tudo que o CycleContext precisa aqui
 import { createContext, ReactNode, useReducer, useState } from 'react'
-import { Cycle, cyclesReducer } from '../reducers/cycles'
+import { ActionTypes, Cycle, cyclesReducer } from '../reducers/cycles'
 
 interface CreateCycleData {
   // vamos criar uma interface para 'data' da função que cria um novo ciclo - o contexto tem que ser desacoplado de bibliotecas externas, pois se um dia as bibliotecas mudarem, isso não afete o contexto → por isso vamos criar a tipagem de data da função ‘createNewCycle’
@@ -33,7 +33,7 @@ export function CyclesContextProvider({
   const [cyclesState, dispatch] = useReducer(cyclesReducer, {
     cycles: [],
     activeCycleId: null,
-  }) // o useReducer recebe dois parâmetros, uma função e o estado inicial que será um objeto com cycles e activeCycleId - a função do primeiro parâmetro de useReducer recebe dois parâmetros: state que é o valor atual, em tempo real, da variável de ciclos, e uma action que é qual ação o usuário quer realizar de alteração dentro da variável (action pode ser interromper o ciclo, adicionar um novo ciclo) - setCycles (que agora se chama dispatch) vai ser o método para disparar a ação (não vai ser mais o método pra alterar diretamente o valor de cycles)
+  }) // o useReducer recebe dois parâmetros, uma função e o estado inicial que será um objeto com cycles e activeCycleId - a função do primeiro parâmetro de useReducer (que está em outro arquivo) recebe dois parâmetros: state que é o valor atual, em tempo real, da variável de ciclos, e uma action que é qual ação o usuário quer realizar de alteração dentro da variável (action pode ser interromper o ciclo, adicionar um novo ciclo) - setCycles (que agora se chama dispatch) vai ser o método para disparar a ação (não vai ser mais o método pra alterar diretamente o valor de cycles)
 
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0) // esse estado vai armazenar a quantidade de segundos que passaram após o ciclo ter sido criado
   const { cycles, activeCycleId } = cyclesState // como vamos controlar vários estados dentro de useReducer, podemos recuperar eles aqui
@@ -47,7 +47,7 @@ export function CyclesContextProvider({
   function markCurrentCycleAsFinished() {
     // é melhor criar uma nova função pra enviar no contexto do que enviar uma função de useState pra atualizar o estado no contexto (essa função foi definida aqui porque usa a função setCycles) - vai ser chamada do componente Countdown
     dispatch({
-      type: 'MARK_CURRENT_CYCLE_AS_FINISHED',
+      type: ActionTypes.MARK_CURRENT_CYCLE_AS_FINISHED,
       payload: { activeCycleId },
     })
   }
@@ -61,7 +61,7 @@ export function CyclesContextProvider({
       startDate: new Date(), // vamos colocar a data e horário que foi criada o ciclo
     }
 
-    dispatch({ type: 'ADD_NEW_CYCLE', payload: { newCycle } }) // tenho que mandar uma informação dentro de dispatch que o useReducer consiga distinguir uma action de outra - ao chamar a função dispatch a função dentro de useReducer é executada - o valor que passamos como argumento em dispatch vai ficar no lugar de action em useReducer - vamos enviar um objeto com a propriedade 'type' para identificar a ação para podermos distinguir ela em useReducer
+    dispatch({ type: ActionTypes.ADD_NEW_CYCLE, payload: { newCycle } }) // tenho que mandar uma informação dentro de dispatch que o useReducer consiga distinguir uma action de outra - ao chamar a função dispatch a função dentro de useReducer é executada - o valor que passamos como argumento em dispatch vai ficar no lugar de action em useReducer - vamos enviar um objeto com a propriedade 'type' para identificar a ação para podermos distinguir ela em useReducer
 
     setAmountSecondsPassed(0) // vamos zerar os a contagem dos segundos pra quando reiniciar o ciclo eles iniciarem corretamente
 
@@ -71,7 +71,7 @@ export function CyclesContextProvider({
   function interruptCurrentCycle() {
     // função para parar o ciclo  - vai ser chamada do componente Home
     dispatch({
-      type: 'INTERRUPT_CURRENT_CYCLE',
+      type: ActionTypes.INTERRUPT_CURRENT_CYCLE,
       payload: { activeCycleId },
     })
   }
