@@ -1,6 +1,11 @@
 // vamos colocar tudo que o CycleContext precisa aqui
 import { createContext, ReactNode, useReducer, useState } from 'react'
-import { ActionTypes, Cycle, cyclesReducer } from '../reducers/cycles'
+import {
+  ActionTypes,
+  addNewCycleAction,
+  interruptCurrentCycleAction,
+} from '../reducers/cycles/actions'
+import { Cycle, cyclesReducer } from '../reducers/cycles/reducer'
 
 interface CreateCycleData {
   // vamos criar uma interface para 'data' da função que cria um novo ciclo - o contexto tem que ser desacoplado de bibliotecas externas, pois se um dia as bibliotecas mudarem, isso não afete o contexto → por isso vamos criar a tipagem de data da função ‘createNewCycle’
@@ -46,10 +51,7 @@ export function CyclesContextProvider({
 
   function markCurrentCycleAsFinished() {
     // é melhor criar uma nova função pra enviar no contexto do que enviar uma função de useState pra atualizar o estado no contexto (essa função foi definida aqui porque usa a função setCycles) - vai ser chamada do componente Countdown
-    dispatch({
-      type: ActionTypes.MARK_CURRENT_CYCLE_AS_FINISHED,
-      payload: { activeCycleId },
-    })
+    dispatch(markCurrentCycleAsFinished())
   }
 
   function createNewCycle(data: CreateCycleData) {
@@ -61,7 +63,7 @@ export function CyclesContextProvider({
       startDate: new Date(), // vamos colocar a data e horário que foi criada o ciclo
     }
 
-    dispatch({ type: ActionTypes.ADD_NEW_CYCLE, payload: { newCycle } }) // tenho que mandar uma informação dentro de dispatch que o useReducer consiga distinguir uma action de outra - ao chamar a função dispatch a função dentro de useReducer é executada - o valor que passamos como argumento em dispatch vai ficar no lugar de action em useReducer - vamos enviar um objeto com a propriedade 'type' para identificar a ação para podermos distinguir ela em useReducer
+    dispatch(addNewCycleAction(newCycle)) // tenho que mandar uma informação dentro de dispatch que o useReducer consiga distinguir uma action de outra - ao chamar a função dispatch a função dentro de useReducer é executada - o valor que passamos como argumento em dispatch vai ficar no lugar de action em useReducer - vamos enviar um objeto com a propriedade 'type' para identificar a ação para podermos distinguir ela em useReducer
 
     setAmountSecondsPassed(0) // vamos zerar os a contagem dos segundos pra quando reiniciar o ciclo eles iniciarem corretamente
 
@@ -70,10 +72,7 @@ export function CyclesContextProvider({
 
   function interruptCurrentCycle() {
     // função para parar o ciclo  - vai ser chamada do componente Home
-    dispatch({
-      type: ActionTypes.INTERRUPT_CURRENT_CYCLE,
-      payload: { activeCycleId },
-    })
+    dispatch(interruptCurrentCycleAction())
   }
 
   return (

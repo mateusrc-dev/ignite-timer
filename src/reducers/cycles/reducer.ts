@@ -1,3 +1,5 @@
+import { ActionTypes } from './actions'
+
 export interface Cycle {
   // vamos criar a interface para definir o formato de cada ciclo que adicionarmos na aplicação
   id: string // vamos ter vários ciclos registrados (lista de ciclos), por isso vai ser importante termos um id
@@ -12,12 +14,6 @@ interface CyclesState {
   // vamos colocar aqui as informações que vão ser salvas dentro de reducer - vão ser controladas dentro do useReducer
   cycles: Cycle[] // estado que vai armazenar todos os ciclos em um array
   activeCycleId: string | null // estado que vai armazenar o 'id' do ciclo ativo - generics para fazer a tipagem do dado do estado em generics - vai inicializar como nulo porque o valor inicial do ciclo é nulo
-}
-
-export enum ActionTypes { // aqui dentro vamos definir todas as actions que nós temos - enum é um dicionário que diz pra gente exatamente quais ações que nós temos
-  ADD_NEW_CYCLE = 'ADD_NEW_CYCLE',
-  INTERRUPT_CURRENT_CYCLE = 'INTERRUPT_CURRENT_CYCLE',
-  MARK_CURRENT_CYCLE_AS_FINISHED = 'MARK_CURRENT_CYCLE_AS_FINISHED',
 }
 
 export function cyclesReducer(state: CyclesState, action: any) {
