@@ -22,7 +22,7 @@ export function Countdown() {
         // função para fazer os segundos reduzirem, a cada 1000 milissegundos será executada novamente (porque foi o intervalo especificado) - vamos guardar ela em uma variável que será usada na função clearInterval
         const secondsDifference = differenceInSeconds(
           new Date(),
-          activeCycle.startDate,
+          new Date(activeCycle.startDate), // vamos usar o new Date para converter para Data (essa informação pode estar vindo como string do localStorage)
         ) // função que calcula a diferença de duas datas em segundos - primeiro parâmetro tem que ser a data mais atual e o segundo a que passou
         if (secondsDifference >= totalSeconds) {
           // se a diferença em segundos entre a data que o ciclo foi criado (activeCycle.startDate) pra data atual (new Date()) for igual ou maior que o total de segundos (totalSeconds) do ciclo quer dizer que o ciclo acabou
