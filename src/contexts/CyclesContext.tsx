@@ -1,5 +1,11 @@
 // vamos colocar tudo que o CycleContext precisa aqui
-import { createContext, ReactNode, useReducer, useState } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react'
 import {
   ActionTypes,
   addNewCycleAction,
@@ -39,6 +45,12 @@ export function CyclesContextProvider({
     cycles: [],
     activeCycleId: null,
   }) // o useReducer recebe dois parâmetros, uma função e o estado inicial que será um objeto com cycles e activeCycleId - a função do primeiro parâmetro de useReducer (que está em outro arquivo) recebe dois parâmetros: state que é o valor atual, em tempo real, da variável de ciclos, e uma action que é qual ação o usuário quer realizar de alteração dentro da variável (action pode ser interromper o ciclo, adicionar um novo ciclo) - setCycles (que agora se chama dispatch) vai ser o método para disparar a ação (não vai ser mais o método pra alterar diretamente o valor de cycles)
+
+  useEffect(() => {
+    // salvando os dados dos ciclos no localStorage
+    const stateJSON = JSON.stringify(cyclesState)
+    localStorage.setItem('@', stateJSON)
+  }, [cyclesState])
 
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0) // esse estado vai armazenar a quantidade de segundos que passaram após o ciclo ter sido criado
   const { cycles, activeCycleId } = cyclesState // como vamos controlar vários estados dentro de useReducer, podemos recuperar eles aqui
