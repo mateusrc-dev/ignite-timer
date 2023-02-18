@@ -24,8 +24,8 @@ interface CreateCycleData {
 interface CyclesContextType {
   // vamos falar aqui quais informações vamos colocar dentro do contexto - as informações que Countdown, Home, History precisam
   cycles: Cycle[] // vamos passar cycles para o contexto para termos acesso em history
-  activeCycle: Cycle | undefined // vai ser undefined quando o usuário não tiver iniciado nenhum ciclo
-  activeCycleId: string | null
+  activeCycle: Cycle | undefined | null // vai ser undefined quando o usuário não tiver iniciado nenhum ciclo
+  activeCycleId: string | null | undefined
   markCurrentCycleAsFinished: () => void
   amountSecondsPassed: number
   setSecondsPassed: (seconds: number) => void
@@ -56,6 +56,11 @@ export function CyclesContextProvider({
 
       if (storedStateAsJSON) {
         return JSON.parse(storedStateAsJSON)
+      } else {
+        return {
+          cycles: [],
+          activeCycleId: null,
+        }
       }
     },
   ) // o useReducer recebe dois parâmetros, uma função e o estado inicial que será um objeto com cycles e activeCycleId - a função do primeiro parâmetro de useReducer (que está em outro arquivo - reducer.ts) recebe dois parâmetros: state que é o valor atual, em tempo real, da variável de ciclos, e uma action que é qual ação o usuário quer realizar de alteração dentro da variável (action pode ser interromper o ciclo, adicionar um novo ciclo) - setCycles (que agora se chama dispatch) vai ser o método para disparar a ação (não vai ser mais o método pra alterar diretamente o valor de cycles)

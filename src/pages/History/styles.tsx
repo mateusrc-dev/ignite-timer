@@ -17,7 +17,24 @@ export const HistoryList = styled.div`
   flex: 1; //para ocupar o máximo de espaço possível onde estiver o elemento
   overflow: auto; // quando o tamanho da tabela for maior que o tamanho do container disponível pra ela, vai ser gerado uma barra de rolagem
   margin-top: 2rem;
-
+  &::-webkit-scrollbar {
+    width: 15px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${(props) => props.theme['gray-100']};
+    border-radius: 10px;
+    width: 0px;
+    background-clip: padding-box;
+    border: 3px solid transparent;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${(props) => props.theme['gray-400']};
+    border-radius: 0px;
+    width: 0px;
+    border-radius: 10px;
+    background-clip: padding-box;
+    border: 3px solid transparent;
+  }
   table {
     width: 100%;
     border-collapse: collapse; // para tirar o espaço entre as células da tabela

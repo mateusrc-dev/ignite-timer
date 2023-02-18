@@ -20,39 +20,42 @@ export function History() {
               <th>Status</th>
             </tr>
           </thead>
-          <tbody>
-            {cycles.map((cycle) => {
-              return (
-                <tr key={cycle.id}>
-                  <td>{cycle.task}</td>
-                  <td>{cycle.minutesAmount} minutos</td>
-                  <td>
-                    {formatDistanceToNow(new Date(cycle.startDate), {
-                      addSuffix: true, // para ficar um 'há' na frente
-                      locale: ptBR, // para ficar no idioma português
-                    })}
-                  </td>
-                  <td>
-                    {
-                      cycle.finishedDate && (
-                        <Status statusColor="green">Concluído</Status>
-                      ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
-                    }
-                    {
-                      cycle.interruptedDate && (
-                        <Status statusColor="red">Interrompido</Status>
-                      ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
-                    }
-                    {
-                      !cycle.interruptedDate && !cycle.finishedDate && (
-                        <Status statusColor="yellow">Em andamento</Status>
-                      ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
-                    }
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
+          {
+            <tbody>
+              {cycles &&
+                cycles.map((cycle) => {
+                  return (
+                    <tr key={cycle.id}>
+                      <td>{cycle.task}</td>
+                      <td>{cycle.minutesAmount} minutos</td>
+                      <td>
+                        {formatDistanceToNow(new Date(cycle.startDate), {
+                          addSuffix: true, // para ficar um 'há' na frente
+                          locale: ptBR, // para ficar no idioma português
+                        })}
+                      </td>
+                      <td>
+                        {
+                          cycle.finishedDate && (
+                            <Status statusColor="green">Concluído</Status>
+                          ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
+                        }
+                        {
+                          cycle.interruptedDate && (
+                            <Status statusColor="red">Interrompido</Status>
+                          ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
+                        }
+                        {
+                          !cycle.interruptedDate && !cycle.finishedDate && (
+                            <Status statusColor="yellow">Em andamento</Status>
+                          ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
+                        }
+                      </td>
+                    </tr>
+                  )
+                })}
+            </tbody>
+          }
         </table>
       </HistoryList>
     </HistoryContainer>
