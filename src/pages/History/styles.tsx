@@ -108,3 +108,44 @@ export const Status = styled.span<StatusProps>`
       ]}; //vamos pegar a nossa propriedade statusColor que está dentro de props
   }
 `
+
+export const WarningContainer = styled.div`
+  background-color: ${(props) => props.theme['gray-700']};
+  display: flex;
+  height: 10rem;
+  border-radius: 0 0 8px 8px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  border-top: 4px solid ${(props) => props.theme['gray-800']};
+  &::-webkit-scrollbar {
+    width: 15px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${(props) => props.theme['gray-100']};
+    border-radius: 10px;
+    width: 0px;
+    background-clip: padding-box;
+    border: 3px solid transparent;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${(props) => props.theme['gray-400']};
+    border-radius: 0px;
+    width: 0px;
+    border-radius: 10px;
+    background-clip: padding-box;
+    border: 3px solid transparent;
+  }
+  p {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 2rem;
+    svg {
+      font-size: 6rem;
+    }
+  }
+`
