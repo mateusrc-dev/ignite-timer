@@ -55,6 +55,7 @@ export function NewCycleForm() {
         <ButtonDecrement
           disabled={!!activeCycle}
           onClick={() => updateTimer('decrement')}
+          type="button"
         >
           -
         </ButtonDecrement>
@@ -71,6 +72,7 @@ export function NewCycleForm() {
         <ButtonIncrement
           disabled={!!activeCycle}
           onClick={() => updateTimer('increment')}
+          type="button"
         >
           +
         </ButtonIncrement>
