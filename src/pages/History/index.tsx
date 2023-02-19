@@ -29,6 +29,7 @@ export function History() {
               <th>Duração</th>
               <th>Início</th>
               <th>Status</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -61,14 +62,16 @@ export function History() {
                         ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
                       }
                     </td>
-                    {cycle.finishedDate || cycle.interruptedDate ? (
-                      <Delete
-                        title="excluir"
-                        onClick={() => handleDeleteCycle(cycle.id)}
-                      >
-                        <Trash />
-                      </Delete>
-                    ) : null}
+                    <td>
+                      {cycle.finishedDate || cycle.interruptedDate ? (
+                        <Delete
+                          title="excluir"
+                          onClick={() => handleDeleteCycle(cycle.id)}
+                        >
+                          <Trash />
+                        </Delete>
+                      ) : null}
+                    </td>
                   </tr>
                 )
               })}

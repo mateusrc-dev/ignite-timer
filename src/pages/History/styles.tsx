@@ -140,7 +140,7 @@ export const WarningContainer = styled.div`
   p {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 3rem;
     font-weight: bold;
     font-style: italic;
     font-size: 2rem;
@@ -151,8 +151,6 @@ export const WarningContainer = styled.div`
 `
 
 export const Delete = styled.button`
-  margin-left: -35px;
-  margin-top: 17px;
   background: transparent;
   border: 0;
   color: ${(props) => props.theme['red-500']};
