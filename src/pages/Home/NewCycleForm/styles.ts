@@ -63,8 +63,15 @@ export const ButtonIncrement = styled.button`
   left: 46px;
   top: 18px;
   line-height: 0;
-  &:hover {
+  &:not(:disabled):hover {
     filter: brightness(0.7);
+  }
+  &:disabled {
+    filter: brightness(0.5);
+    cursor: not-allowed;
+  }
+  &:focus {
+    box-shadow: none;
   }
 `
 
@@ -78,7 +85,14 @@ export const ButtonDecrement = styled.button`
   left: 6px;
   top: 18px;
   line-height: 0;
-  &:hover {
+  &:not(:disabled):hover {
     filter: brightness(0.7);
+  }
+  &:disabled {
+    filter: brightness(0.5);
+    cursor: not-allowed;
+  }
+  &:focus {
+    box-shadow: none;
   }
 `

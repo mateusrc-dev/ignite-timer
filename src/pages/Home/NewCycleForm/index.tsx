@@ -52,7 +52,10 @@ export function NewCycleForm() {
       </datalist>
       <label htmlFor="minutesAmount">durante</label>
       <ContainerButton>
-        <ButtonDecrement onClick={() => updateTimer('decrement')}>
+        <ButtonDecrement
+          disabled={!!activeCycle}
+          onClick={() => updateTimer('decrement')}
+        >
           -
         </ButtonDecrement>
         <MinutesAmountInput
@@ -65,7 +68,10 @@ export function NewCycleForm() {
           {...register('minutesAmount', { valueAsNumber: true })} // depois do nome do input vamos passar como parâmetro um objeto de configurações - vamos configurar para que o valor do número retorne do tipo number
           disabled={!!activeCycle}
         />
-        <ButtonIncrement onClick={() => updateTimer('increment')}>
+        <ButtonIncrement
+          disabled={!!activeCycle}
+          onClick={() => updateTimer('increment')}
+        >
           +
         </ButtonIncrement>
       </ContainerButton>
