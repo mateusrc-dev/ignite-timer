@@ -1,11 +1,36 @@
-import { FormContainer, MinutesAmountInput, TaskInput } from './styles'
+import {
+  ButtonDecrement,
+  ButtonIncrement,
+  ContainerButton,
+  FormContainer,
+  MinutesAmountInput,
+  TaskInput,
+} from './styles'
 import { useContext } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { CyclesContext } from '../../../contexts/CyclesContext'
 
 export function NewCycleForm() {
   const { activeCycle } = useContext(CyclesContext) // importando o activeCycle porque usamos ele aqui
-  const { register } = useFormContext() // vamos usar o próprio contexto de react-hook-form - esse contexto só funciona se tiver um Provider por volta do componente que está usando o useFormContext
+  const { register, setValue, watch } = useFormContext() // vamos usar o próprio contexto de react-hook-form - esse contexto só funciona se tiver um Provider por volta do componente que está usando o useFormContext
+
+  function updateTimer(btn: string) {
+    if (btn === 'increment') {
+      let valueTimer = watch('minutesAmount')
+      if (valueTimer >= 60) {
+        return
+      }
+      valueTimer = valueTimer + 5
+      setValue('minutesAmount', valueTimer)
+    } else {
+      let valueTimer = watch('minutesAmount')
+      if (valueTimer <= 5) {
+        return
+      }
+      valueTimer = valueTimer - 5
+      setValue('minutesAmount', valueTimer)
+    }
+  }
 
   return (
     // vamos usar label para quando a pessoa clicar no label dê foco no input
@@ -24,19 +49,26 @@ export function NewCycleForm() {
         <option value="Projeto 2" />
         <option value="Projeto 3" />
         <option value="Projeto 4" />
-        <option value="Banana" />
       </datalist>
       <label htmlFor="minutesAmount">durante</label>
-      <MinutesAmountInput
-        id="minutesAmount"
-        type="number"
-        placeholder="00"
-        step={5} // no react podemos colocar o valor númerico entre chaves em um atributo - no html nativo colocamos entre aspas - step diz o intervalo que o número vai pular no input
-        min={5} // podemos estabelecer o valor mínimo e o valor máximo
-        max={60}
-        {...register('minutesAmount', { valueAsNumber: true })} // depois do nome do input vamos passar como parâmetro um objeto de configurações - vamos configurar para que o valor do número retorne do tipo number
-        disabled={!!activeCycle}
-      />
+      <ContainerButton>
+        <ButtonDecrement onClick={() => updateTimer('decrement')}>
+          -
+        </ButtonDecrement>
+        <MinutesAmountInput
+          id="minutesAmount"
+          type="number"
+          placeholder="00"
+          step={5} // no react podemos colocar o valor númerico entre chaves em um atributo - no html nativo colocamos entre aspas - step diz o intervalo que o número vai pular no input
+          min={5} // podemos estabelecer o valor mínimo e o valor máximo
+          max={60}
+          {...register('minutesAmount', { valueAsNumber: true })} // depois do nome do input vamos passar como parâmetro um objeto de configurações - vamos configurar para que o valor do número retorne do tipo number
+          disabled={!!activeCycle}
+        />
+        <ButtonIncrement onClick={() => updateTimer('increment')}>
+          +
+        </ButtonIncrement>
+      </ContainerButton>
       <span>minutos.</span>
     </FormContainer>
   )
