@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { CyclesContext } from '../../contexts/CyclesContext'
 import {
+  Delete,
   HistoryContainer,
   HistoryList,
   Status,
@@ -8,10 +9,14 @@ import {
 } from './styles'
 import { formatDistanceToNow } from 'date-fns' // vamos usar esse método para calcular a distância de uma determinada data para a data atual
 import ptBR from 'date-fns/locale/pt-BR'
-import { Warning } from 'phosphor-react'
+import { Trash, Warning } from 'phosphor-react'
 
 export function History() {
-  const { cycles } = useContext(CyclesContext) // conseguimos ter acesso a cycles através do context
+  const { cycles, deleteCycle } = useContext(CyclesContext) // conseguimos ter acesso a cycles através do context
+
+  function handleDeleteCycle(cycleId: string) {
+    deleteCycle(cycleId)
+  }
 
   return (
     <HistoryContainer>
@@ -56,6 +61,14 @@ export function History() {
                         ) /* o && significa então... se for verdadeiro então... só executa se for verdadeiro, não tem else */
                       }
                     </td>
+                    {cycle.finishedDate || cycle.interruptedDate ? (
+                      <Delete
+                        title="excluir"
+                        onClick={() => handleDeleteCycle(cycle.id)}
+                      >
+                        <Trash />
+                      </Delete>
+                    ) : null}
                   </tr>
                 )
               })}

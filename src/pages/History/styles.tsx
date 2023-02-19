@@ -149,3 +149,16 @@ export const WarningContainer = styled.div`
     }
   }
 `
+
+export const Delete = styled.button`
+  margin-left: -35px;
+  margin-top: 17px;
+  background: transparent;
+  border: 0;
+  color: ${(props) => props.theme['red-500']};
+  font-size: 1.5rem;
+  cursor: pointer;
+  &:hover {
+    filter: brightness(0.7);
+  }
+`

@@ -10,6 +10,7 @@ import {
 import {
   ActionTypes,
   addNewCycleAction,
+  deleteCycleAction,
   interruptCurrentCycleAction,
   markCurrentCycleAsFinishAction,
 } from '../reducers/cycles/actions'
@@ -31,6 +32,7 @@ interface CyclesContextType {
   setSecondsPassed: (seconds: number) => void
   createNewCycle: (data: CreateCycleData) => void
   interruptCurrentCycle: () => void
+  deleteCycle: (cycleId: string) => void
 }
 
 export const CyclesContext = createContext({} as CyclesContextType) // vamos criar o contexto dos ciclos - temos que colocar o 'as' para que em value em Provider sugira os valores a serem inseridos no contexto - para o Countdown Home e History conseguir acessar esse contexto, precisamos exportar ele
@@ -116,6 +118,10 @@ export function CyclesContextProvider({
     dispatch(interruptCurrentCycleAction())
   }
 
+  function deleteCycle(cycleId: string) {
+    dispatch(deleteCycleAction(cycleId))
+  }
+
   return (
     // nessa função 'CyclesContextProvider' temos que falar aqui no return aonde que o conteúdo que é passado como filho do componente superior (onde exportamos essa função) em App vai ser acoplado - children
     <CyclesContext.Provider
@@ -128,6 +134,7 @@ export function CyclesContextProvider({
         setSecondsPassed,
         createNewCycle,
         interruptCurrentCycle,
+        deleteCycle,
       }}
     >
       {children}

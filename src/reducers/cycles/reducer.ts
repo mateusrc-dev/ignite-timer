@@ -32,6 +32,13 @@ export function cyclesReducer(state: CyclesState, action: any) {
         draft.cycles.push(action.payload.newCycle) // vamos usar o 'push' porque o immer vai lidar pra respeitar a imutabilidade
         draft.activeCycleId = action.payload.newCycle.id
       })
+    case ActionTypes.DELETE_CYCLE:
+      return produce(state, (draft) => {
+        // draft é o rascunho - dentro dele faço as alterações - draft tem os mesmos valores de state - posso trabalhar com draft como se ele fosse uma estrutura mutável (uma variável), sem precisar me preocupar com a imutabilidade
+        draft.cycles = draft.cycles.filter(
+          (cycle) => action.payload.cycleId !== cycle.id,
+        )
+      })
     case ActionTypes.INTERRUPT_CURRENT_CYCLE: {
       /* return {
         ...state,

@@ -70,6 +70,9 @@ export const ButtonIncrement = styled.button`
     filter: brightness(0.5);
     cursor: not-allowed;
   }
+  &:focus {
+    box-shadow: none;
+  }
 `
 
 export const ButtonDecrement = styled.button`
@@ -88,5 +91,8 @@ export const ButtonDecrement = styled.button`
   &:disabled {
     filter: brightness(0.5);
     cursor: not-allowed;
+  }
+  &:focus {
+    box-shadow: none;
   }
 `
