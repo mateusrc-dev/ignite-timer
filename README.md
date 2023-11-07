@@ -12,3 +12,5 @@
 - Lists and keys in ReactJs
 - Componentization
 - Properties
+
+### 💻 To run the application on your machine download the repository and in the repository terminal run the command 'npm run dev' to run vite
