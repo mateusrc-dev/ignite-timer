@@ -2,7 +2,7 @@
 
 ➡️ This application consists of a timer in which we can play, we can write the activity we are going to carry out, and when we stop the timer, that activity and recorded time will be recorded in the history
 
-➡️ Foi criada uma lógica em javascript para criar o temporizador (para o tempo retornar) - foi utilizada a função setInterval para contabilizar os segundos
+➡️ Javascript logic was created to create the timer (for the time to return) - the setInterval function was used to count the seconds
 
 ➡️ In this project, technologies such as ReactJs, Context Api, useState, useReduce, as well as JavaScript (repeating structures, if and else) were used.
 
